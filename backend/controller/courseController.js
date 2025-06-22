@@ -6,42 +6,61 @@ const User = require("../models/userModel.js");
 
 const getAdminDashboardStats = async (req, res) => {
   try {
-    // Total students with role = student
-    const totalStudents = await User.countDocuments({ role: "student" });
+    const adminId = req.user.id;
 
-    // New admissions in last 7 days
+    // Fetch all courses created by this admin
+    const adminCourses = await Course.find({ createdBy: adminId }).select(
+      "price studentsEnrolled title"
+    );
+
+    const activeCourses = adminCourses.length;
+
+    // Calculate revenue from only this admin's courses
+    let revenue = 0;
+    const enrolledStudentIdsSet = new Set();
+
+    adminCourses.forEach((course) => {
+      revenue += course.price * course.studentsEnrolled.length;
+      course.studentsEnrolled.forEach((id) =>
+        enrolledStudentIdsSet.add(id.toString())
+      );
+    });
+
+    const enrolledStudentIds = Array.from(enrolledStudentIdsSet);
+
+    // Total students who enrolled in this admin’s courses
+    const totalStudents = enrolledStudentIds.length;
+
+    // Find new admissions among them (last 7 days)
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
     const newAdmissions = await User.countDocuments({
-      role: "student",
+      _id: { $in: enrolledStudentIds },
       createdAt: { $gte: oneWeekAgo },
     });
 
-    // All active courses (count all)
-    const activeCourses = await Course.countDocuments();
-
-    // Calculate revenue: sum of course.price * number of students enrolled
-    const allCourses = await Course.find({}).select("price studentsEnrolled");
-
-    let revenue = 0;
-    allCourses.forEach((course) => {
-      revenue += course.price * course.studentsEnrolled.length;
-    });
-
-    // Fetch students with name, email, batch, and first enrolled course title
-    const students = await User.find({ role: "student" })
-      .populate("enrolledCourses", "title")
+    // Get student details
+    const students = await User.find({
+      _id: { $in: enrolledStudentIds },
+    })
+      .populate("enrolledCourses", "title createdBy")
       .select("name email createdAt enrolledCourses")
       .sort({ createdAt: -1 });
 
-    const studentList = students.map((student) => ({
-      id: student._id,
-      name: student.name,
-      email: student.email,
-      batch: student.createdAt.getFullYear() + 1,
-      course: student.enrolledCourses?.[0]?.title || "N/A",
-    }));
+    const studentList = students.map((student) => {
+      const enrolledCourse = student.enrolledCourses.find(
+        (course) => course.createdBy.toString() === adminId.toString()
+      );
+
+      return {
+        id: student._id,
+        name: student.name,
+        email: student.email,
+        batch: student.createdAt.getFullYear() + 1,
+        course: enrolledCourse?.title || "N/A",
+      };
+    });
 
     // Send response
     return res.status(200).json({
@@ -57,6 +76,27 @@ const getAdminDashboardStats = async (req, res) => {
   }
 };
 
+const getAdminCourses = async (req, res) => {
+  try {
+    const { id, role } = req.user;
+
+    if (role !== "admin") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Access denied. Admins only." });
+    }
+
+    const courses = await Course.find({ createdBy: id });
+
+    res.status(200).json({
+      success: true,
+      courses,
+    });
+  } catch (error) {
+    console.error("Admin Courses Error:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
 
 const addCourse = async (req, res) => {
   try {
@@ -372,5 +412,6 @@ module.exports = {
   deleteVideo,
   searchCourses,
   deleteCourse,
-  getAdminDashboardStats
+  getAdminDashboardStats,
+  getAdminCourses,
 };

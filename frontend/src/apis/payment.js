@@ -18,3 +18,18 @@ export const verifyPayment = async (paymentDetails) => {
   });
   return res.json();
 };
+
+export const getAdminPayments = async () => {
+  const res = await fetch(`${API_BASE_URL}/admin/payments`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      // Include auth token if required
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    credentials:"include"
+  });
+
+  const data = await res.json();
+  return data;
+};

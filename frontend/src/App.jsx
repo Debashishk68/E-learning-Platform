@@ -23,6 +23,7 @@ import EditCourse from "./routes/admin/EditCourse";
 import Logout from "./routes/auth/LogoutRoute";
 import SearchResultsPage from "./routes/student/SearchResult";
 import Home from "./routes/Home";
+import AdminPayments from "./routes/admin/GetAdminPayments";
 
 const App = () => {
   return (
@@ -44,6 +45,7 @@ const App = () => {
 
         {/* Admin Panel */}
         <Route path="/admin" element={<AdminLayout />} />
+        <Route path="/admin/payments" element={<AdminPayments />} />
         <Route path="/admin/courses" element={<ShowCourses />} />
         <Route path="/admin/addcourse" element={<AddCourse />} />
         <Route path="/admin/editcourse/:id" element={<EditCourse />} />

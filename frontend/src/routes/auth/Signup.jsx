@@ -16,12 +16,13 @@ const Signup = () => {
     lastName: "",
     username: "",
     email: "",
+    role: "student",
     password: "",
     confirmPassword: "",
   });
   const navigate = useNavigate();
 
-  const { mutate: register, isPending,isSuccess } = useRegisterUser();
+  const { mutate: register, isPending, isSuccess } = useRegisterUser();
 
   const [formErrors, setFormErrors] = useState({});
 
@@ -91,11 +92,10 @@ const Signup = () => {
   };
 
   useEffect(() => {
-      if(isSuccess){
-        navigate('/login')
-      }
-  }, [isSuccess])
-  
+    if (isSuccess) {
+      navigate("/login");
+    }
+  }, [isSuccess]);
 
   return (
     <div className="min-h-screen flex">
@@ -147,9 +147,23 @@ const Signup = () => {
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
             />
+
             {formErrors.email && (
               <p className="text-red-500 text-sm">{formErrors.email}</p>
             )}
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">
+                Select Role
+              </label>
+              <select
+                className="w-full p-2 border border-gray-3s00 rounded-md focus:outline-none"
+                value={formData.role}
+                onChange={(e) => handleChange("role", e.target.value)}
+              >
+                <option value="student">Student</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
 
             <div className="flex gap-4 flex-col md:flex-row">
               <InputField

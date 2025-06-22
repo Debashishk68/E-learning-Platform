@@ -12,6 +12,7 @@ const {
 const upload = require("../../middlewares/upload");
 const userModel = require("../../models/userModel");
 const { deleteUser } = require("../../controller/userController");
+const { getAdminPayments } = require("../../controller/paymentController");
 
 router.get("/", isAdminLoggedIn, async(req, res) => {
   const {name}= req.user 
@@ -34,6 +35,8 @@ router.put(
   updateCourse
 );
 router.get("/dashboard",isAdminLoggedIn, getAdminDashboardStats);
+router.get("/payments", isAdminLoggedIn, getAdminPayments);
+
 
 router.post(
   "/course/add",

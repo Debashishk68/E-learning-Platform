@@ -1,6 +1,7 @@
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const Course = require("../models/coursesModel");
+const Payment = require("../models/payment")
 require("dotenv").config();
 
 const razorpay = new Razorpay({
@@ -45,7 +46,14 @@ const verifyPayment = async (req, res) => {
   const update=  await Course.findByIdAndUpdate({_id:courseId}, {
       $addToSet: { studentsEnrolled: userId },
     });
-    
+       await Payment.create({
+      student: userId,
+      course: courseId,
+      amount: update.price,
+      razorpayOrderId: razorpay_order_id,
+      razorpayPaymentId: razorpay_payment_id,
+      status: "success",
+    });
 
     return res.status(200).json({ success: true, message: "Payment verified and course access granted." });
   } else {
@@ -53,4 +61,45 @@ const verifyPayment = async (req, res) => {
   }
 };
 
-module.exports = { createOrder, verifyPayment };
+const getAdminPayments = async (req, res) => {
+  try {
+    const adminId = req.user.id;
+
+    // Find courses created by this admin
+    const courses = await Course.find({ createdBy: adminId }).select("_id title");
+
+    const courseIds = courses.map(course => course._id.toString());
+    const courseMap = new Map(courses.map(c => [c._id.toString(), c.title]));
+
+    // Get successful payments for these courses
+    const payments = await Payment.find({
+      course: { $in: courseIds },
+      status: "success",
+    })
+      .populate("student", "name email")
+      .populate("course", "title");
+
+    // Format the result
+    const formatted = payments.map(p => ({
+      id: p._id,
+      studentName: p.student?.name || "Unknown",
+      studentEmail: p.student?.email || "N/A",
+      courseTitle: courseMap.get(p.course?._id.toString()) || "N/A",
+      amount: p.amount,
+      date: p.createdAt,
+    }));
+
+    res.status(200).json({
+      success: true,
+      totalPayments: formatted.length,
+      payments: formatted,
+    });
+    console.log(formatted)
+
+  } catch (err) {
+    console.error("Failed to get admin payments:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+module.exports = { createOrder, verifyPayment ,getAdminPayments };

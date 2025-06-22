@@ -7,13 +7,15 @@ import {
   FiLogOut,
   FiMenu,
   FiX,
+  FiDollarSign,
 } from "react-icons/fi";
-import Logo from "../../assets/Logo.png"
+import Logo from "../../assets/Logo.png";
 
 const menuItems = [
   { label: "Dashboard", icon: <FiHome />, route: "/admin", exact: true },
   { label: "Courses", icon: <FiBookOpen />, route: "/admin/courses" },
   { label: "Add Course", icon: <FiPlus />, route: "/admin/addcourse" },
+  { label: "Payments", icon: <FiDollarSign />, route: "/admin/payments" }, // 👈 New Payments tab
   { label: "Logout", icon: <FiLogOut />, route: "/logout" },
 ];
 
@@ -32,9 +34,14 @@ const AdminSidebar = () => {
   let initials = "U";
   if (nameParts.length === 1) {
     const word = nameParts[0];
-    initials = word.length >= 2 ? (word[0] + word[word.length - 1]).toUpperCase() : word[0].toUpperCase();
+    initials =
+      word.length >= 2
+        ? (word[0] + word[word.length - 1]).toUpperCase()
+        : word[0].toUpperCase();
   } else if (nameParts.length > 1) {
-    initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
+    initials = (
+      nameParts[0][0] + nameParts[nameParts.length - 1][0]
+    ).toUpperCase();
   }
 
   return (
@@ -56,7 +63,7 @@ const AdminSidebar = () => {
       >
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <img src={Logo} alt="logo" className="w-12 h-12"/>
+          <img src={Logo} alt="logo" className="w-12 h-12" />
           <h1 className="text-lg font-semibold">Byway</h1>
         </div>
 
@@ -86,11 +93,10 @@ const AdminSidebar = () => {
 
         {/* Profile */}
         <div className="flex gap-2 items-center mt-6">
-          
-            <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white text-lg font-semibold">
-              {initials}
-            </div>
-          
+          <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white text-lg font-semibold">
+            {initials}
+          </div>
+
           <span>Hi, {nameParts[0]}</span>
         </div>
       </aside>

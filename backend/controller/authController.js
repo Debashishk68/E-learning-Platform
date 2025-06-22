@@ -47,7 +47,7 @@ async function login(req, res) {
 
 async function register(req, res) {
   try {
-    let { firstName, lastName, username, email, password } = req.body;
+    let { firstName, lastName, username, email, password,role } = req.body;
 
     if (!email || !password || !firstName || !lastName || !username) {
       return res.status(400).json({ error: "All fields are required" });
@@ -68,6 +68,7 @@ async function register(req, res) {
       username,
       email,
       password: hashedPassword,
+      role: role
     });
 
     res.status(201).json({ message: "User registered successfully" });
