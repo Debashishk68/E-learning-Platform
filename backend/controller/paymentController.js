@@ -94,7 +94,7 @@ const getAdminPayments = async (req, res) => {
       totalPayments: formatted.length,
       payments: formatted,
     });
-    console.log(formatted)
+    
 
   } catch (err) {
     console.error("Failed to get admin payments:", err);

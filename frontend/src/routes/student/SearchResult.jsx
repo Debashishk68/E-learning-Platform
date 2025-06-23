@@ -30,7 +30,7 @@ const SearchResultsPage = () => {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
 
-        <main className="flex-1 overflow-y-auto mt-12 p-4">
+        <main className="flex-1 overflow-y-auto mt-20 p-4">
           {/* 🔍 Search Bar */}
           <form
             onSubmit={handleSearchSubmit}

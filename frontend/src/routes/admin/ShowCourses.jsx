@@ -10,9 +10,9 @@ const ShowCourses = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isSuccess) {
-      console.log("Courses fetched:", data);
-    }
+    // if (isSuccess) {
+    //   console.log("Courses fetched:", data);
+    // }
     if (isError) {
       console.error("Error fetching courses");
     }

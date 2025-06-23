@@ -32,7 +32,7 @@ const Courses = () => {
       <Header />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 mt-10 overflow-y-auto px-6 py-8">
+        <main className="flex-1 mt-20 overflow-y-auto px-6 py-8">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-gray-800">
               Available Courses

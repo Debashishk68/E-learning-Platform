@@ -18,8 +18,11 @@ export default function EditCourse() {
   const navigate = useNavigate();
 
   const { data: course, isLoading, isError } = useGetCourse(courseId);
-  const { data: courseVideos, isLoading: videosLoading, isError: videosError } =
-    useGetCourseVideos(courseId);
+  const {
+    data: courseVideos,
+    isLoading: videosLoading,
+    isError: videosError,
+  } = useGetCourseVideos(courseId);
 
   const { mutate: editCourse, isPending, isSuccess } = useEditCourse();
   const { mutate: deleteVideo } = useDeleteVideo();
@@ -78,7 +81,8 @@ export default function EditCourse() {
         [name]: name === "thumbnail" ? URL.createObjectURL(file) : file.name,
       }));
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      const updatedValue = name === "price" ? Number(value) : value;
+      setFormData((prev) => ({ ...prev, [name]: updatedValue }));
     }
   };
 
@@ -95,7 +99,11 @@ export default function EditCourse() {
   };
 
   const handleDeleteCourse = () => {
-    if (window.confirm("⚠️ This will permanently delete the course. Are you sure?")) {
+    if (
+      window.confirm(
+        "⚠️ This will permanently delete the course. Are you sure?"
+      )
+    ) {
       deleteCourse(courseId, {
         onSuccess: () => {
           toast.success("🗑️ Course deleted successfully");
@@ -111,7 +119,10 @@ export default function EditCourse() {
   const addMoreVideo = () => {
     setFormData((prev) => ({
       ...prev,
-      videos: [...prev.videos, { title: "", file: null, duration: "", freePreview: false }],
+      videos: [
+        ...prev.videos,
+        { title: "", file: null, duration: "", freePreview: false },
+      ],
     }));
   };
 
@@ -122,6 +133,7 @@ export default function EditCourse() {
       return;
     }
     setError("");
+    console.log(formData.price);
     editCourse({ id: courseId, formData });
   };
 
@@ -132,9 +144,14 @@ export default function EditCourse() {
     }
   }, [isSuccess]);
 
-  if (isLoading || videosLoading) return <p className="text-center p-8">Loading...</p>;
+  if (isLoading || videosLoading)
+    return <p className="text-center p-8">Loading...</p>;
   if (isError || videosError)
-    return <p className="text-center text-red-500 p-8">Error loading course or videos.</p>;
+    return (
+      <p className="text-center text-red-500 p-8">
+        Error loading course or videos.
+      </p>
+    );
 
   return (
     <div className="flex bg-gray-100 min-h-screen">
@@ -154,12 +171,30 @@ export default function EditCourse() {
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InputField label="Course Title" name="title" value={formData.title} onChange={handleChange} />
-              <InputField label="Instructor" name="instructor" value={formData.instructor} onChange={handleChange} />
-              <InputField label="Price (INR)" name="price" type="number" value={formData.price} onChange={handleChange} />
+              <InputField
+                label="Course Title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+              />
+              <InputField
+                label="Instructor"
+                name="instructor"
+                value={formData.instructor}
+                onChange={handleChange}
+              />
+              <InputField
+                label="Price (INR)"
+                name="price"
+                type="number"
+                value={formData.price}
+                onChange={handleChange}
+              />
 
               <div>
-                <label className="block text-sm font-medium mb-1">Thumbnail</label>
+                <label className="block text-sm font-medium mb-1">
+                  Thumbnail
+                </label>
                 <input
                   type="file"
                   name="thumbnail"
@@ -177,10 +212,17 @@ export default function EditCourse() {
               </div>
             </div>
 
-            <TextArea label="Course Description" name="description" value={formData.description} onChange={handleChange} />
+            <TextArea
+              label="Course Description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+            />
 
             <div>
-              <label className="block text-sm font-medium mb-1">Course Category</label>
+              <label className="block text-sm font-medium mb-1">
+                Course Category
+              </label>
               <select
                 name="category"
                 value={formData.category}
@@ -189,7 +231,9 @@ export default function EditCourse() {
               >
                 <option value="">Select Category</option>
                 <option value="web-development">🌐 Web Development</option>
-                <option value="mobile-development">📱 Mobile App Development</option>
+                <option value="mobile-development">
+                  📱 Mobile App Development
+                </option>
                 <option value="ai-ml">🤖 AI & Machine Learning</option>
                 <option value="data-science">📊 Data Science</option>
                 <option value="ui-ux">🎨 UI/UX Design</option>
@@ -199,7 +243,9 @@ export default function EditCourse() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Course Notes (PDF)</label>
+              <label className="block text-sm font-medium mb-1">
+                Course Notes (PDF)
+              </label>
               <input
                 type="file"
                 name="notes"
@@ -208,7 +254,9 @@ export default function EditCourse() {
                 className="block w-full text-sm file:py-2 file:px-4 file:bg-green-100 file:text-green-700 rounded-md hover:file:bg-green-200"
               />
               {formData.notes instanceof File ? (
-                <p className="text-sm text-gray-600 mt-1">📄 Selected: {formData.notes.name}</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  📄 Selected: {formData.notes.name}
+                </p>
               ) : formData.notes?.path ? (
                 <a
                   href={`${API_BASE_URL}${formData.notes.path}`}
@@ -224,15 +272,24 @@ export default function EditCourse() {
             {error && <p className="text-red-500 text-sm">{error}</p>}
 
             <div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">🎥 Course Videos</h3>
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                🎥 Course Videos
+              </h3>
               <div className="space-y-4">
                 {Array.isArray(formData.videos) &&
                   formData.videos.map((video, index) => (
-                    <div key={index} className="border p-4 rounded-md bg-gray-50 shadow-sm relative">
+                    <div
+                      key={index}
+                      className="border p-4 rounded-md bg-gray-50 shadow-sm relative"
+                    >
                       {video.title && video.duration ? (
                         <>
-                          <p className="text-sm font-medium">🎬 {video.title}</p>
-                          <p className="text-sm text-gray-600">Duration: {video.duration} mins</p>
+                          <p className="text-sm font-medium">
+                            🎬 {video.title}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            Duration: {video.duration} mins
+                          </p>
                         </>
                       ) : (
                         <>
@@ -242,7 +299,11 @@ export default function EditCourse() {
                               type="checkbox"
                               checked={video.freePreview}
                               onChange={(e) =>
-                                handleVideoChange(index, "freePreview", e.target.checked)
+                                handleVideoChange(
+                                  index,
+                                  "freePreview",
+                                  e.target.checked
+                                )
                               }
                             />
                           </div>

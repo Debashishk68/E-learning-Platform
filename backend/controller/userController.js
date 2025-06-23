@@ -36,8 +36,14 @@ const editProfile = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    
-
+    if (req.file) {
+      return res.status(200).json({
+        success: true,
+        message: "Profile updated successfully",
+        user: updatedUser,
+        profilepic: `/uploads/profile_pics/${req.file.filename}`,
+      });
+    }
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully",
@@ -56,13 +62,17 @@ const deleteUser = async (req, res) => {
     const { userId } = req.body;
 
     if (!userId) {
-      return res.status(400).json({ success: false, message: "User ID is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "User ID is required" });
     }
 
     const deletedUser = await userModel.findByIdAndDelete(userId);
 
     if (!deletedUser) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     return res.status(200).json({

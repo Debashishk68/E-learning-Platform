@@ -2,6 +2,7 @@ import React from "react";
 import { FaPlayCircle, FaLock } from "react-icons/fa";
 
 const VideoSidebar = ({ videos, currentIndex, setCurrentIndex }) => {
+
   return (
     <aside className="w-full lg:w-72 bg-white rounded-xl border border-gray-200 shadow p-4 h-fit max-h-[80vh] overflow-y-auto">
       <h3 className="font-semibold text-lg text-gray-800 mb-4">
@@ -32,9 +33,9 @@ const VideoSidebar = ({ videos, currentIndex, setCurrentIndex }) => {
                   {video.title}
                 </span>
               </div>
-              <span className="text-sm text-gray-500 shrink-0">
+              {/* <span className="text-sm text-gray-500 shrink-0">
                 {video.duration}
-              </span>
+              </span> */}
             </li>
           );
         })}

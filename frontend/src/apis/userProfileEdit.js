@@ -3,7 +3,6 @@ import API_BASE_URL from "../config/api";
 
 export const editProfileApi = async (data) => {
     const form = new FormData()
-    console.log(data)
     if(data.profilePic){
     form.append("profilePic",data.profilePic)
     }

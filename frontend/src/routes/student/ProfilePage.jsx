@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Client/Header";
 import Sidebar from "../../components/Client/Sidebar";
 import useUserEditProfile from "../../hooks/useUserEditProfile";
-import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const [name, setUserName] = useState(localStorage.getItem("name") || "");
@@ -10,7 +10,9 @@ const ProfilePage = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [preview, setPreview] = useState(null);
 
-  const { mutate: updateProfile, isLoading } = useUserEditProfile();
+  const navigate = useNavigate()
+
+  const { mutate: updateProfile, isLoading ,isSuccess} = useUserEditProfile();
   
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -20,17 +22,20 @@ const ProfilePage = () => {
     }
   };
 
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     updateProfile({name,profilePic}, {
       onSuccess: (res) => {
         localStorage.setItem("name", res.user.name);
-        if (res.user.profilePic) {
-          localStorage.setItem("profilePic", res.user.profilePic);
+        console.log(res)
+        if (res.profilepic) {
+          console.log(res.profilepic)
+          localStorage.setItem("profilepic", res.profilepic);
         }
-        // Refresh the page
-        window.location.reload();
+      
       },
       onError: (err) => {
         alert(err.message || "Profile update failed");
