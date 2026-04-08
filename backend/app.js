@@ -27,6 +27,7 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
+app.get("/",(req,res)=>{res.send("Running Server")})
 app.use("/auth", userRouter);
 
 app.use("/dashboard", dashboardRouter);
