@@ -28,17 +28,21 @@ async function login(req, res) {
       expiresIn: "1h",
     });
 
-    res
-      .cookie("token", token, { httpOnly: true })
-      .status(200)
-      .json({
-        message: "Login successful",
-        isAuthenticated: true,
-        role: user.role,
-        userId: user._id,
-        name: user.name,
-        profilepic: user.profilepic,
-      });
+   res
+  .cookie("token", token, {
+    httpOnly: true,
+    secure: true,       // ✅ REQUIRED for HTTPS (Vercel)
+    sameSite: "none",   // ✅ REQUIRED for cross-origin
+  })
+  .status(200)
+  .json({
+    message: "Login successful",
+    isAuthenticated: true,
+    role: user.role,
+    userId: user._id,
+    name: user.name,
+    profilepic: user.profilepic,
+  });
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -80,7 +84,11 @@ async function register(req, res) {
 
 function logout(req, res) {
   res
-    .clearCookie("token")
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    })
     .status(200)
     .json({ message: "Successfully logged out" });
 }
